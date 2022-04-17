@@ -85,7 +85,7 @@ platform_properties:
         []
       os: Mac-12
       device_type: none
-      mac_model: Macmini8,1
+      cpu: x86
       xcode: 13a233
   mac_android:
     properties:
@@ -106,6 +106,7 @@ platform_properties:
           {"dependency": "open_jdk", "version": "11"}
         ]
       os: Mac-12
+      cpu: x86
       device_os: N
   mac_ios:
     properties:
@@ -127,6 +128,7 @@ platform_properties:
           {"dependency": "ios_signing"}
         ]
       os: Mac-12
+      cpu: x86
       device_os: iOS-15.1
       xcode: 13a233
   windows:
@@ -1516,7 +1518,6 @@ targets:
     scheduler: luci
 
   - name: Linux_android color_filter_cache_perf__e2e_summary
-    bringup: true
     recipe: devicelab/devicelab_drone
     presubmit: false
     timeout: 60
@@ -1984,7 +1985,6 @@ targets:
   - name: Linux_android hybrid_android_views_integration_test
     recipe: devicelab/devicelab_drone
     presubmit: false
-    bringup: true # https://github.com/flutter/flutter/issues/100991
     timeout: 60
     properties:
       tags: >
@@ -2304,21 +2304,6 @@ targets:
     scheduler: luci
     timeout: 60
 
-  - name: Linux deferred components
-    bringup: true # Flaky https://github.com/flutter/flutter/issues/96403
-    recipe: flutter/deferred_components
-    properties:
-      dependencies: >-
-        [
-          {"dependency": "android_sdk", "version": "version:31v8"},
-          {"dependency": "android_virtual_device", "version": "31"},
-          {"dependency": "curl"}
-        ]
-      tags: >
-        ["framework","hostonly"]
-    scheduler: luci
-    timeout: 60
-
   - name: Linux_android opacity_peephole_one_rect_perf__e2e_summary
     recipe: devicelab/devicelab_drone
     presubmit: false
@@ -2387,6 +2372,39 @@ targets:
       tags: >
         ["devicelab","android","linux"]
       task_name: opacity_peephole_col_of_alpha_savelayer_rows_perf__e2e_summary
+    scheduler: luci
+
+  - name: Linux_android gradient_dynamic_perf__e2e_summary
+    bringup: true
+    recipe: devicelab/devicelab_drone
+    presubmit: false
+    timeout: 60
+    properties:
+      tags: >
+        ["devicelab","android","linux"]
+      task_name: gradient_dynamic_perf__e2e_summary
+    scheduler: luci
+
+  - name: Linux_android gradient_consistent_perf__e2e_summary
+    bringup: true
+    recipe: devicelab/devicelab_drone
+    presubmit: false
+    timeout: 60
+    properties:
+      tags: >
+        ["devicelab","android","linux"]
+      task_name: gradient_consistent_perf__e2e_summary
+    scheduler: luci
+
+  - name: Linux_android gradient_static_perf__e2e_summary
+    bringup: true
+    recipe: devicelab/devicelab_drone
+    presubmit: false
+    timeout: 60
+    properties:
+      tags: >
+        ["devicelab","android","linux"]
+      task_name: gradient_static_perf__e2e_summary
     scheduler: luci
 
   - name: Linux_android android_choreographer_do_frame_test
@@ -2567,27 +2585,6 @@ targets:
       tags: >
         ["devicelab","hostonly"]
       task_name: dart_plugin_registry_test
-    scheduler: luci
-    runIf:
-      - dev/**
-      - packages/flutter_tools/**
-      - bin/**
-      - .ci.yaml
-
-  - name: Mac entrypoint_dart_registrant
-    recipe: devicelab/devicelab_drone
-    bringup: true
-    timeout: 60
-    properties:
-      caches: >-
-        [
-          {"name":"gradle","path":"gradle"}
-        ]
-      dependencies: >-
-        []
-      tags: >
-        ["devicelab","hostonly"]
-      task_name: entrypoint_dart_registrant
     scheduler: luci
     runIf:
       - dev/**
@@ -2918,6 +2915,28 @@ targets:
       - bin/**
       - .ci.yaml
 
+  - name: Mac tool_host_cross_arch_tests
+    recipe: flutter/flutter_drone
+    bringup: true
+    timeout: 60
+    properties:
+      add_recipes_cq: "true"
+      dependencies: >-
+        [
+          {"dependency": "xcode"},
+          {"dependency": "gems"}
+        ]
+      shard: tool_host_cross_arch_tests
+      tags: >
+        ["framework","hostonly","shard"]
+      test_timeout_secs: "2700"
+    scheduler: luci
+    runIf:
+      - dev/**
+      - packages/flutter_tools/**
+      - bin/**
+      - .ci.yaml
+
   - name: Mac tool_integration_tests_1_4
     recipe: flutter/flutter_drone
     timeout: 60
@@ -3092,6 +3111,21 @@ targets:
       subshard: web
       tags: >
         ["framework","hostonly","shard"]
+    scheduler: luci
+    runIf:
+      - dev/**
+      - packages/flutter_tools/**
+      - bin/**
+      - .ci.yaml
+
+  - name: Mac_android entrypoint_dart_registrant
+    recipe: devicelab/devicelab_drone
+    bringup: true
+    timeout: 60
+    properties:
+      tags: >
+        ["devicelab","android","mac"]
+      task_name: entrypoint_dart_registrant
     scheduler: luci
     runIf:
       - dev/**
